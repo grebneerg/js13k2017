@@ -11,10 +11,17 @@ const jsmin = require('gulp-babel-minify');
 
 const fs = require("fs");
 
-gulp.task('build-js', ['build-css'], () => {
-    return gulp.src("src/js/*.js")
+gulp.task('build-main-js', ['build-css'], () => {
+    return gulp.src("src/js/main.js")
         .pipe(jsmin())
-        .pipe(concat("compressed.js"))
+        .pipe(concat("main.min.js"))
+        .pipe(gulp.dest("dist/"));
+});
+
+gulp.task('build-components-js', ['build-main-js'], () => {
+    return gulp.src("src/js/components.js")
+        .pipe(jsmin())
+        .pipe(concat("components.min.js"))
         .pipe(gulp.dest("dist/"));
 });
 
@@ -28,10 +35,11 @@ gulp.task('build-css', ['clean'], () => {
         .pipe(gulp.dest("dist/"));
 });
 
-gulp.task('build-html', ['build-js'], () => {
+gulp.task('build-html', ['build-components-js'], () => {
     console.log("hi");
     return gulp.src("src/index.html")
-        .pipe(replace("{{js}}", "<script>" + fs.readFileSync("dist/compressed.js") + "</script>"))
+        .pipe(replace("{{main}}", "<script>" + fs.readFileSync("dist/main.min.js") + "</script>"))
+        .pipe(replace("{{components}}", "<script>" + fs.readFileSync("dist/components.min.js") + "</script>"))
         .pipe(replace("{{css}}", "<style>" + fs.readFileSync("dist/compressed.css") + "</style>"))
         .pipe(htmlmin({
             collapseWhitespace: true,
@@ -41,7 +49,7 @@ gulp.task('build-html', ['build-js'], () => {
 });
 
 gulp.task('clean:prebuild', ['build-html'],() => {
-    return del(['dist/compressed.css', 'dist/compressed.js']);
+    return del(['dist/*.css', 'dist/*.js']);
 });
 
 gulp.task('clean', () => {

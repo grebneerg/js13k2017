@@ -1,3 +1,5 @@
+
+
 var playing = true;
 
 var c = document.querySelector('a-entity[camera]'); //the camera
