@@ -8,6 +8,12 @@
     <!--    <a-ring radius-outer="30" radius-inner="4" color="red" material="side:double;transparent:true;opacity:0.5" rotation="90 90 0"></a-ring>-->
     <!--</a-sphere>-->
     <a-sphere orbit="ir:4;or:30" position="100 0 0" radius="4" color="#93D4CC"></a-sphere>
-    <a-entity camera position="50 0 0" look-controls></a-entity>
+    <a-entity moon camera position="50 0 0" look-controls>
+        <a-entity cursor="fuse: false"
+            position="0 0 -1"
+            geometry="primitive: ring; radiusInner: 0.02; radiusOuter: 0.03"
+            material="color: black; shader: flat">
+        </a-entity>
+    </a-entity>
 </a-scene>
 {{main}}
