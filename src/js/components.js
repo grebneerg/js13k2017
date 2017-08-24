@@ -7,6 +7,7 @@ AFRAME.registerComponent('orbit', {
     multiple: true,
     
     init: function() {
+        this.orbiting = false;
         console.log(this);
         let el = this.el;
         let orbits = [];
@@ -17,12 +18,8 @@ AFRAME.registerComponent('orbit', {
             orbits[i].setAttribute("color", "grey");
             orbits[i].setAttribute("opacity", "0.1");
             orbits[i].setAttribute("material", "side:double");
-            orbits[i].addEventListener('mouseenter', (evt) => {
-                evt.target.setAttribute("opacity",'0.5'); //change
-            });
-            orbits[i].addEventListener('mouseleave', (evt) => {
-                evt.target.setAttribute("opacity",'0.1'); //change
-            });
+            orbits[i].addEventListener('mouseenter', this.mouseEnter);
+            orbits[i].addEventListener('mouseleave', this.mouseExit);
             el.appendChild(orbits[i]);
         }
         
@@ -31,6 +28,26 @@ AFRAME.registerComponent('orbit', {
         orbits[2].setAttribute("rotation", "90 90 0");
         
         this.orbits = orbits;
+    },
+    
+    enterOrbit: function() {
+        this.orbiting = true;
+        for (let i = 0; i < 3; i++) {
+            this.el.removeChild(this.orbits[i]);
+        }
+    },
+    exitOrbit: function() {
+        this.orbiting = false;
+        for (let i = 0; i < 3; i++) {
+            this.el.appendChild(this.orbits[i]);
+        }
+    },
+    
+    mouseEnter: (evt) => {
+        evt.target.setAttribute("opacity",'0.5');
+    },
+    mouseExit: (evt) => {
+        evt.target.setAttribute("opacity",'0.1');
     }
 });
 
@@ -44,7 +61,10 @@ AFRAME.registerComponent('moon', {
         this.angle = 0;
         this.movement = {};
         this.r = "000";
-        this.o = { //The center of the planet being orbited
+        this.orbiting = document.querySelector("#initial").components.orbit;
+        this.orbiting.enterOrbit();
+        this.oldOrbit = null;
+        this.o = { //important info about the planet being orbited
             x: 0,
             y: 0,
             z: 0,
@@ -68,7 +88,7 @@ AFRAME.registerComponent('moon', {
             },
         };
         this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { // here I'm taking advantage of arrow functions using lexical scoping for `this`
-            if (this.state === 0) {
+            if (this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) {
                 console.log(evt);
                 let intersection = evt.detail.intersection;
                 let pos = this.el.getAttribute('position');
@@ -85,7 +105,9 @@ AFRAME.registerComponent('moon', {
                 this.r = "" + rotation.x + rotation.y + rotation.z;
                 console.log(this.r);
                 
-                
+                this.orbiting.exitOrbit();
+                this.old = this.orbiting;
+                this.orbiting = evt.detail.intersectedEl.parentEl.components.orbit;
                 
                 this.o = evt.detail.intersectedEl.parentEl.getAttribute('position');
                 
@@ -132,6 +154,7 @@ AFRAME.registerComponent('moon', {
                     console.log("hit!");
                     this.t = 0;
                     this.state = 0;
+                    this.orbiting.enterOrbit();
                 }
                 break;
         }

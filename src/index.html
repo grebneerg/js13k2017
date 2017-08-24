@@ -1,14 +1,10 @@
 <script src="https://aframe.io/releases/0.6.1/aframe.min.js"></script>
 {{components}}
-<a-scene> <!-- also remove avatar recorder/replayer -->
-    <a-sphere position="0 0 0" radius="4" color="#4CC3D9"></a-sphere>
-    <!--<a-sphere position="100 0 0" radius="4" color="#93D4CC">-->
-    <!--    <a-ring radius-outer="30" radius-inner="4" color="red" material="side:double;transparent:true;opacity:0.5"></a-ring>-->
-    <!--    <a-ring radius-outer="30" radius-inner="4" color="red" material="side:double;transparent:true;opacity:0.5" rotation="0 90 90"></a-ring>-->
-    <!--    <a-ring radius-outer="30" radius-inner="4" color="red" material="side:double;transparent:true;opacity:0.5" rotation="90 90 0"></a-ring>-->
-    <!--</a-sphere>-->
-    <a-sphere orbit="ir:4;or:30" position="100 0 0" radius="4" color="#93D4CC"></a-sphere>
+<a-scene>
+    <a-sphere id="initial" orbit="ir:4;or:30" position="0 0 0" radius="4" color="#4CC3D9"></a-sphere>
     <a-sphere orbit="ir:4;or:30" position="100 0 200" radius="4" color="#93D4CC"></a-sphere>
+    <a-sphere orbit="ir:4;or:30" position="100 0 0" radius="4" color="#93D4CC"></a-sphere>
+    
     <a-entity moon camera position="50 0 0" look-controls>
         <a-entity cursor="fuse: false"
             position="0 0 -1"
