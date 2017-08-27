@@ -56,47 +56,43 @@ AFRAME.registerComponent('moon', {
     init: function() {
         this.d = Math.PI * 2 / (5000/10); // distance to orbit per frame in radians
         this.t = 0;
-        this.state = 0;
+        this.state = 0; //Game state: 0 -> orbiting; 1 -> traveling between orbits
         this.time = 0;
-        this.angle = 0;
-        this.movement = {};
-        this.r = "000";
-        this.orbiting = document.querySelector("#initial").components.orbit;
+        this.movement = {}; //Will hold info about how far we move per tick in state 1
+        this.r = "000"; //represents current rotation so we can tell what plane we are on
+        this.orbiting = document.querySelector("#initial").components.orbit; // holds the orbit component we are currently in
         this.orbiting.enterOrbit();
-        this.oldOrbit = null;
-        this.o = this.orbiting.el.getAttribute('position');
-        this.o.h = 100;
-        let newX = this.o.x + this.o.h;
+        this.o = this.orbiting.el.getAttribute('position'); //Center of the current orbit
+        this.o.h = 100; // Distance from center of current orbit
         
+        //Adding camera, look-controls, and cursor to this element
+        let newX = this.o.x + this.o.h;
         this.el.setAttribute('position', {x: newX, y: this.o.y, z: this.o.z});
         this.el.setAttribute('camera', '');
         this.el.setAttribute('look-controls', '');
-        let cursor = document.createElement('a-entity');
+        let cursor = document.createElement('a-entity'); //Cursor stuff from here down
         cursor.setAttribute('cursor', 'fuse:false');
         cursor.setAttribute('position', '0 0 -1');
         cursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.02; radiusOuter: 0.03');
         cursor.setAttribute('material', 'color: black; shader: flat');
         this.el.appendChild(cursor);
         
-        this.planes = {
+        this.planes = { //different methods for orbiting depending on plane.
             "000": (c,x,y,z) => {
-                let loc = this.computeLoc(x - this.o.x, y - this.o.y, this.angle);
-                this.angle = loc.a;
+                let loc = this.computeLoc(x - this.o.x, y - this.o.y);
                 c.setAttribute('position', {x: loc.x + this.o.x, y: loc.y + this.o.y, z: this.o.z});
             },
             "09090": (c,x,y,z) => {
-                let loc = this.computeLoc(y - this.o.y, z - this.o.z, this.angle);
-                this.angle = loc.a;
+                let loc = this.computeLoc(y - this.o.y, z - this.o.z);
                 c.setAttribute('position', {x: this.o.x, y: loc.x + this.o.y, z: loc.y + this.o.z});
             },
             "90900": (c,x,y,z) => {
-                let loc = this.computeLoc(x - this.o.x, z - this.o.z, this.angle);
-                this.angle = loc.a;
+                let loc = this.computeLoc(x - this.o.x, z - this.o.z);
                 c.setAttribute('position', {x: loc.x + this.o.x, y: this.o.y, z: loc.y + this.o.z});
             },
         };
-        this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { // here I'm taking advantage of arrow functions using lexical scoping for `this`
-            if (this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) {
+        this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { //Handling clicking on an orbit. here I'm taking advantage of arrow functions using lexical scoping for `this`
+            if (this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
                 console.log(evt);
                 let intersection = evt.detail.intersection;
                 let pos = this.el.getAttribute('position');
@@ -110,18 +106,17 @@ AFRAME.registerComponent('moon', {
                 this.movement = m;
                 let rotation = evt.detail.intersectedEl.getAttribute('rotation');
                 console.log(rotation);
-                this.r = "" + rotation.x + rotation.y + rotation.z;
+                this.r = "" + rotation.x + rotation.y + rotation.z; //string to determine what orbiting method should be used
                 console.log(this.r);
                 
                 this.orbiting.exitOrbit();
-                this.old = this.orbiting;
                 this.orbiting = evt.detail.intersectedEl.parentEl.components.orbit;
                 
                 this.o = evt.detail.intersectedEl.parentEl.getAttribute('position');
                 
                 
                 
-                switch (this.r) {
+                switch (this.r) { //calculate distance based on plane
                     case "000":
                         this.o.h = this.dist(intersection.point.x, this.o.x, intersection.point.y, this.o.y);
                         this.angle = Math.atan2(intersection.point.y - this.o.y, intersection.point.x - this.o.x);
@@ -168,7 +163,7 @@ AFRAME.registerComponent('moon', {
                 break;
         }
     },
-    computeLoc: function(x, y, a) {
+    computeLoc: function(x, y) {
 
         let angle = Math.atan2(y, x) + this.d;
 
