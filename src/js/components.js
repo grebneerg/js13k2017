@@ -15,7 +15,7 @@ AFRAME.registerComponent('orbit', {
             orbits[i] = document.createElement("a-ring");
             orbits[i].setAttribute("radius-outer", this.data.or);
             orbits[i].setAttribute("radius-inner", this.data.ir);
-            orbits[i].setAttribute("color", "grey");
+            orbits[i].setAttribute("color", "white");
             orbits[i].setAttribute("opacity", "0.1");
             orbits[i].setAttribute("material", "side:double");
             orbits[i].addEventListener('mouseenter', this.mouseEnter);
@@ -23,11 +23,15 @@ AFRAME.registerComponent('orbit', {
             el.appendChild(orbits[i]);
         }
         
+        
+        
         orbits[0].setAttribute("rotation", "0 0 0");
         orbits[1].setAttribute("rotation", "0 90 90");
         orbits[2].setAttribute("rotation", "90 90 0");
         
         this.orbits = orbits;
+        let colors = ["red","brown","orange"];
+        el.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
     },
     
     enterOrbit: function() {
@@ -39,8 +43,10 @@ AFRAME.registerComponent('orbit', {
     exitOrbit: function() {
         this.orbiting = false;
         for (let i = 0; i < 3; i++) {
+            this.orbits[i].setAttribute("material", "side:double");
             this.el.appendChild(this.orbits[i]);
         }
+        console.log("exit")
     },
     
     mouseEnter: (evt) => {
@@ -52,7 +58,7 @@ AFRAME.registerComponent('orbit', {
 });
 
 AFRAME.registerComponent('moon', {
-    dependencies: ['position', 'camera','look-controls'],
+    // dependencies: ['position', 'camera','look-controls'],
     init: function() {
         this.d = Math.PI * 2 / (5000/10); // distance to orbit per frame in radians
         this.t = 0;
@@ -62,6 +68,7 @@ AFRAME.registerComponent('moon', {
         this.r = "000"; //represents current rotation so we can tell what plane we are on
         this.orbiting = document.querySelector("#initial").components.orbit; // holds the orbit component we are currently in
         this.orbiting.enterOrbit();
+        this.oldOrbit = null;
         this.o = this.orbiting.el.getAttribute('position'); //Center of the current orbit
         this.o.h = 100; // Distance from center of current orbit
         
@@ -72,9 +79,10 @@ AFRAME.registerComponent('moon', {
         this.el.setAttribute('look-controls', '');
         let cursor = document.createElement('a-entity'); //Cursor stuff from here down
         cursor.setAttribute('cursor', 'fuse:false');
+        cursor.setAttribute('raycaster', 'far: 1500');
         cursor.setAttribute('position', '0 0 -1');
-        cursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.02; radiusOuter: 0.03');
-        cursor.setAttribute('material', 'color: black; shader: flat');
+        cursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.01; radiusOuter: 0.02');
+        cursor.setAttribute('material', 'color: white; shader: flat');
         this.el.appendChild(cursor);
         
         this.planes = { //different methods for orbiting depending on plane.
@@ -96,7 +104,7 @@ AFRAME.registerComponent('moon', {
                 console.log(evt);
                 let intersection = evt.detail.intersection;
                 let pos = this.el.getAttribute('position');
-                let time = intersection.distance * 10;
+                let time = intersection.distance;
                 let m = {};
                 m.t = (time / 10);
                 m.x = (intersection.point.x - pos.x) / m.t;
@@ -109,11 +117,13 @@ AFRAME.registerComponent('moon', {
                 this.r = "" + rotation.x + rotation.y + rotation.z; //string to determine what orbiting method should be used
                 console.log(this.r);
                 
-                this.orbiting.exitOrbit();
+                this.oldOrbit = this.orbiting;
+                // this.orbiting.exitOrbit();
+                console.log(this.oldOrbit);
                 this.orbiting = evt.detail.intersectedEl.parentEl.components.orbit;
                 
                 this.o = evt.detail.intersectedEl.parentEl.getAttribute('position');
-                
+                this.orbiting.enterOrbit(); //this has to be after the above line because it removes access to an object needed there
                 
                 
                 switch (this.r) { //calculate distance based on plane
@@ -158,7 +168,9 @@ AFRAME.registerComponent('moon', {
                     console.log("hit!");
                     this.t = 0;
                     this.state = 0;
-                    this.orbiting.enterOrbit();
+                    console.log(this.oldOrbit);
+                    this.oldOrbit.exitOrbit();
+                    console.log(this.orbiting)
                 }
                 break;
         }
@@ -193,12 +205,12 @@ AFRAME.registerComponent('galaxy', {
                 this.planets[x][y] = []
                 for (let z = 0; z < this.data.z; z++) {
                     let p = document.createElement('a-sphere');
-                    let r = Math.floor(Math.random() * 30 + 20);
+                    let r = Math.floor(Math.random() * 60 + 20);
                     let ir = r + Math.floor(Math.random() * 50 + 20);
-                    let or = ir + Math.floor(Math.random() * 50 + 10);
-                    let tx = x * 300 + Math.floor(Math.random() * 200 - 100);
-                    let ty = y * 300 + Math.floor(Math.random() * 200 - 100);
-                    let tz = z * 300 + Math.floor(Math.random() * 200 - 100);
+                    let or = ir + Math.floor(Math.random() * 75 + 15);
+                    let tx = x * 500 + Math.floor(Math.random() * 300 - 150);
+                    let ty = y * 500 + Math.floor(Math.random() * 300 - 150);
+                    let tz = z * 500 + Math.floor(Math.random() * 300 - 150);
                     p.setAttribute('position', {x: tx, y: ty, z: tz});
                     p.setAttribute("radius", r);
                     p.setAttribute('orbit', {ir : ir, or: or});
@@ -211,5 +223,8 @@ AFRAME.registerComponent('galaxy', {
         let moon = document.createElement('a-entity');
         moon.setAttribute('moon', '');
         this.el.appendChild(moon);
+        let sky = document.createElement('a-sky');
+        sky.setAttribute('color', 'black');
+        this.el.appendChild(sky);
     }
 });
