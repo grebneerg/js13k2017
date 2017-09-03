@@ -78,7 +78,8 @@ AFRAME.registerComponent('moon', {
         this.el.setAttribute('camera', '');
         this.el.setAttribute('look-controls', '');
         let cursor = document.createElement('a-entity'); //Cursor stuff from here down
-        cursor.setAttribute('cursor', 'fuse:false');
+        cursor.setAttribute("gearvr-controls", "");
+        cursor.setAttribute('cursor', 'fuse:false;downEvents:trackpaddown,triggerdown;upEvents:trackpadup,triggerup');
         cursor.setAttribute('raycaster', 'far: 1500');
         cursor.setAttribute('position', '0 0 -1');
         cursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.01; radiusOuter: 0.02');
