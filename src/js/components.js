@@ -30,8 +30,14 @@ AFRAME.registerComponent('orbit', {
         orbits[2].setAttribute("rotation", "90 90 0");
         
         this.orbits = orbits;
-        let colors = ["red","brown","orange"];
-        el.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
+        
+        if (el.getAttribute("id") === "destination") {
+            el.setAttribute('color', "blue");
+        } else {
+            let colors = ["red","brown","orange"];
+            el.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
+        }
+        
     },
     
     enterOrbit: function() {
@@ -60,6 +66,7 @@ AFRAME.registerComponent('orbit', {
 AFRAME.registerComponent('moon', {
     // dependencies: ['position', 'camera','look-controls'],
     init: function() {
+        console.log(this);
         this.d = Math.PI * 2 / (5000/10); // distance to orbit per frame in radians
         this.t = 0;
         this.state = 0; //Game state: 0 -> orbiting; 1 -> traveling between orbits
@@ -78,8 +85,8 @@ AFRAME.registerComponent('moon', {
         this.el.setAttribute('camera', '');
         this.el.setAttribute('look-controls', '');
         let cursor = document.createElement('a-entity'); //Cursor stuff from here down
-        cursor.setAttribute("gearvr-controls", "");
-        cursor.setAttribute('cursor', 'fuse:false;downEvents:trackpaddown,triggerdown;upEvents:trackpadup,triggerup');
+        cursor.setAttribute("click-everywhere", "");
+        cursor.setAttribute('cursor', 'fuse:false;downEvents:gp-down;upEvents:gp-up');
         cursor.setAttribute('raycaster', 'far: 1500');
         cursor.setAttribute('position', '0 0 -1');
         cursor.setAttribute('geometry', 'primitive: ring; radiusInner: 0.01; radiusOuter: 0.02');
@@ -220,12 +227,39 @@ AFRAME.registerComponent('galaxy', {
                 }
             }
         }
-        this.planets[Math.floor(Math.random() * this.data.x)][Math.floor(Math.random() * this.data.y)][Math.floor(Math.random() * this.data.z)].setAttribute('id', 'initial');
+        let initial = this.planets[Math.floor(Math.random() * this.data.x)][Math.floor(Math.random() * this.data.y)][Math.floor(Math.random() * this.data.z)]
+        initial.setAttribute('id', 'initial');
+        let destination;
+        do {
+            destination = this.planets[Math.floor(Math.random() * this.data.x)][Math.floor(Math.random() * this.data.y)][Math.floor(Math.random() * this.data.z)];
+        } while (destination === initial);
+        destination.setAttribute("id", "destination");
         let moon = document.createElement('a-entity');
         moon.setAttribute('moon', '');
         this.el.appendChild(moon);
         let sky = document.createElement('a-sky');
         sky.setAttribute('color', 'black');
         this.el.appendChild(sky);
+    }
+});
+
+AFRAME.registerComponent('click-everywhere', {
+    init: function() {
+        console.log("click-everywhere");
+    },
+    tick: function() {
+        let gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
+        let foundPressedBtn = false;
+        for (let i = 0; i < gamepads.length && !foundPressedBtn; i++) {
+            if (gamepads[i] === null) continue;
+            let btns = gamepads[i].buttons;
+            for (let j = 0; j < btns.length && !foundPressedBtn; j++) {
+                if (btns[j].pressed) {
+                    this.el.emit('gp-down');
+                    this.el.emit('gp-up');
+                    foundPressedBtn = true;
+                }
+            }
+        }
     }
 });
