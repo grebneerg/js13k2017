@@ -32,7 +32,7 @@ AFRAME.registerComponent('orbit', {
         this.orbits = orbits;
         
         if (el.getAttribute("id") === "destination") {
-            el.setAttribute('color', "blue");
+            el.setAttribute('color', "#26871f");
         } else {
             let colors = ["red","brown","orange"];
             el.setAttribute('color', colors[Math.floor(Math.random() * colors.length)]);
