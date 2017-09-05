@@ -19,6 +19,7 @@ AFRAME.registerComponent('orbit', {
             orbits[i].setAttribute("material", "side:double");
             orbits[i].addEventListener('mouseenter', this.mouseEnter);
             orbits[i].addEventListener('mouseleave', this.mouseExit);
+            orbits[i].setAttribute("class", "orbit");
             el.appendChild(orbits[i]);
         }
         
@@ -105,7 +106,7 @@ AFRAME.registerComponent('moon', {
             },
         };
         this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { //Handling clicking on an orbit. here I'm taking advantage of arrow functions using lexical scoping for `this`
-            if (this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
+            if (evt.detail.intersectedEl.getAttribute("class") === "orbit" && this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
                 let intersection = evt.detail.intersection;
                 let pos = this.el.getAttribute('position');
                 let time = intersection.distance;
