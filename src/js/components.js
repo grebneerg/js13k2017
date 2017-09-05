@@ -8,7 +8,6 @@ AFRAME.registerComponent('orbit', {
     
     init: function() {
         this.orbiting = false;
-        console.log(this);
         let el = this.el;
         let orbits = [];
         for (let i = 0; i < 3; i++) {
@@ -52,7 +51,6 @@ AFRAME.registerComponent('orbit', {
             this.orbits[i].setAttribute("material", "side:double");
             this.el.appendChild(this.orbits[i]);
         }
-        console.log("exit")
     },
     
     mouseEnter: (evt) => {
@@ -66,7 +64,6 @@ AFRAME.registerComponent('orbit', {
 AFRAME.registerComponent('moon', {
     // dependencies: ['position', 'camera','look-controls'],
     init: function() {
-        console.log(this);
         this.d = Math.PI * 2 / (5000/10); // distance to orbit per frame in radians
         this.t = 0;
         this.state = 0; //Game state: 0 -> orbiting; 1 -> traveling between orbits
@@ -109,7 +106,6 @@ AFRAME.registerComponent('moon', {
         };
         this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { //Handling clicking on an orbit. here I'm taking advantage of arrow functions using lexical scoping for `this`
             if (this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
-                console.log(evt);
                 let intersection = evt.detail.intersection;
                 let pos = this.el.getAttribute('position');
                 let time = intersection.distance;
@@ -121,13 +117,10 @@ AFRAME.registerComponent('moon', {
                 m.dest = intersection.point;
                 this.movement = m;
                 let rotation = evt.detail.intersectedEl.getAttribute('rotation');
-                console.log(rotation);
                 this.r = "" + rotation.x + rotation.y + rotation.z; //string to determine what orbiting method should be used
-                console.log(this.r);
                 
                 this.oldOrbit = this.orbiting;
                 // this.orbiting.exitOrbit();
-                console.log(this.oldOrbit);
                 this.orbiting = evt.detail.intersectedEl.parentEl.components.orbit;
                 
                 this.o = evt.detail.intersectedEl.parentEl.getAttribute('position');
@@ -148,9 +141,6 @@ AFRAME.registerComponent('moon', {
                         this.angle = Math.atan2(intersection.point.x - this.o.x, intersection.point.z - this.o.z);
                         break;
                 }
-                console.log(this.o.h);
-                
-                console.log(this.o);
                 
                 this.state = 1;
             }
@@ -159,7 +149,6 @@ AFRAME.registerComponent('moon', {
     tick: function(t) {
         if (t - this.time < 10) return;
         let c = this.el;
-        // console.log(c.getAttribute('position'));
         switch (this.state) {
             case 0:
                 let xy = c.getAttribute('position');
@@ -173,12 +162,17 @@ AFRAME.registerComponent('moon', {
                 this.t++;
                 if (this.t > m.t) {
                     c.setAttribute('position', m.dest);
-                    console.log("hit!");
                     this.t = 0;
                     this.state = 0;
-                    console.log(this.oldOrbit);
                     this.oldOrbit.exitOrbit();
-                    console.log(this.orbiting)
+                    if (this.orbiting.el.getAttribute("id") === "destination") {
+                        // let msg = document.createElement("a-entity");
+                        // msg.setAttribute("geometry", "primitive: plane; width: 4; height: auto")
+                        // msg.setAttribute("text", {value: "Home at last! You made it!", });
+                        // msg.setAttribute("scale", "2 2 2");
+                        // c.appendChild(msg);
+                        console.log("you won");
+                    }
                 }
                 break;
         }
@@ -244,9 +238,6 @@ AFRAME.registerComponent('galaxy', {
 });
 
 AFRAME.registerComponent('click-everywhere', {
-    init: function() {
-        console.log("click-everywhere");
-    },
     tick: function() {
         let gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads : []);
         let foundPressedBtn = false;
