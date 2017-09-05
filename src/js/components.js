@@ -105,7 +105,7 @@ AFRAME.registerComponent('moon', {
                 c.setAttribute('position', {x: loc.x + this.o.x, y: this.o.y, z: loc.y + this.o.z});
             },
         };
-        this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { //Handling clicking on an orbit. here I'm taking advantage of arrow functions using lexical scoping for `this`
+        this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { //Handling clicking on an orbit.
             if (evt.detail.intersectedEl.getAttribute("class") === "orbit" && this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
                 let intersection = evt.detail.intersection;
                 let pos = this.el.getAttribute('position');
@@ -167,17 +167,60 @@ AFRAME.registerComponent('moon', {
                     this.state = 0;
                     this.oldOrbit.exitOrbit();
                     if (this.orbiting.el.getAttribute("id") === "destination") {
-                        // let msg = document.createElement("a-entity");
+                        let msg = document.createElement("a-entity");
                         // msg.setAttribute("geometry", "primitive: plane; width: 4; height: auto")
-                        // msg.setAttribute("text", {value: "Home at last! You made it!", });
-                        // msg.setAttribute("scale", "2 2 2");
-                        // c.appendChild(msg);
+                        msg.setAttribute("text", {value: "Home at last! You made it!", });
+                        msg.setAttribute("scale", "2 2 2");
+                        msg.setAttribute('position', '0.5 0 -1');
+                        c.appendChild(msg);
+                        c.removeChild(c.querySelector("a-entity[cursor]"));
                         console.log("you won");
                     }
                 }
                 break;
         }
     },
+    // clickListener: function(evt) {
+    //     if (evt.detail.intersectedEl.getAttribute("class") === "orbit" && this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
+    //         let intersection = evt.detail.intersection;
+    //         let pos = this.el.getAttribute('position');
+    //         let time = intersection.distance;
+    //         let m = {};
+    //         m.t = (time / 10);
+    //         m.x = (intersection.point.x - pos.x) / m.t;
+    //         m.y = (intersection.point.y - pos.y) / m.t;
+    //         m.z = (intersection.point.z - pos.z) / m.t;
+    //         m.dest = intersection.point;
+    //         this.movement = m;
+    //         let rotation = evt.detail.intersectedEl.getAttribute('rotation');
+    //         this.r = "" + rotation.x + rotation.y + rotation.z; //string to determine what orbiting method should be used
+            
+    //         this.oldOrbit = this.orbiting;
+    //         // this.orbiting.exitOrbit();
+    //         this.orbiting = evt.detail.intersectedEl.parentEl.components.orbit;
+            
+    //         this.o = evt.detail.intersectedEl.parentEl.getAttribute('position');
+    //         this.orbiting.enterOrbit(); //this has to be after the above line because it removes access to an object needed there
+            
+            
+    //         switch (this.r) { //calculate distance based on plane
+    //             case "000":
+    //                 this.o.h = this.dist(intersection.point.x, this.o.x, intersection.point.y, this.o.y);
+    //                 this.angle = Math.atan2(intersection.point.y - this.o.y, intersection.point.x - this.o.x);
+    //                 break;
+    //             case "09090":
+    //                 this.o.h = this.dist(intersection.point.y, this.o.y, intersection.point.z, this.o.z);
+    //                 this.angle = Math.atan2(intersection.point.y - this.o.y, intersection.point.z - this.o.z);;
+    //                 break;
+    //             case "90900":
+    //                 this.o.h = this.dist(intersection.point.z, this.o.z, intersection.point.x, this.o.x);
+    //                 this.angle = Math.atan2(intersection.point.x - this.o.x, intersection.point.z - this.o.z);
+    //                 break;
+    //         }
+            
+    //         this.state = 1;
+    //     }
+    // },
     computeLoc: function(x, y) {
 
         let angle = Math.atan2(y, x) + this.d;
