@@ -63,7 +63,6 @@ AFRAME.registerComponent('orbit', {
 });
 
 AFRAME.registerComponent('moon', {
-    // dependencies: ['position', 'camera','look-controls'],
     init: function() {
         this.d = Math.PI * 2 / (5000/10); // distance to orbit per frame in radians
         this.t = 0;
@@ -106,6 +105,7 @@ AFRAME.registerComponent('moon', {
             },
         };
         this.el.querySelector('a-entity[cursor]').addEventListener('click', (evt) => { //Handling clicking on an orbit.
+        console.log("hey");
             if (evt.detail.intersectedEl.getAttribute("class") === "orbit" && this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
                 let intersection = evt.detail.intersection;
                 let pos = this.el.getAttribute('position');
@@ -168,12 +168,32 @@ AFRAME.registerComponent('moon', {
                     this.oldOrbit.exitOrbit();
                     if (this.orbiting.el.getAttribute("id") === "destination") {
                         let msg = document.createElement("a-entity");
-                        // msg.setAttribute("geometry", "primitive: plane; width: 4; height: auto")
-                        msg.setAttribute("text", {value: "Home at last! You made it!", });
+                        msg.setAttribute("text", {value: "Home at last! Click to restart!", });
                         msg.setAttribute("scale", "2 2 2");
                         msg.setAttribute('position', '0.5 0 -1');
                         c.appendChild(msg);
                         c.removeChild(c.querySelector("a-entity[cursor]"));
+                        let nc = document.createElement('a-entity'); //Cursor stuff from here down
+                        nc.setAttribute("click-everywhere", "");
+                        nc.setAttribute('cursor', 'fuse:false;downEvents:gp-down;upEvents:gp-up');
+                        nc.setAttribute('raycaster', 'far: 1500');
+                        nc.setAttribute('position', '0 0 -1');
+                        nc.addEventListener("mousedown", (evt) => {
+                            // console.log("hey");
+                            let scene = document.querySelector("a-scene");
+                            let parent = scene.parentElement;
+                            let galaxy = document.createElement("a-scene");
+                            galaxy.setAttribute("galaxy", "");
+                            // let vrc = true
+                            vr ? scene.exitVR() : "";
+                            parent.removeChild(scene);
+                            // parent.appendChild(galaxy);
+                            // vrc ? galaxy.enterVR() : "";
+                            let intro = document.querySelector("#intro");
+                            intro.setAttribute("style", "display:block");
+                            window.location.reload();
+                        });
+                        c.appendChild(nc);
                         console.log("you won");
                     }
                 }
