@@ -263,6 +263,7 @@ AFRAME.registerComponent('galaxy', {
         this.el.appendChild(moon);
         let sky = document.createElement('a-sky');
         sky.setAttribute('color', 'black');
+        sky.setAttribute("radius", "7000");
         this.el.appendChild(sky);
     }
 });
