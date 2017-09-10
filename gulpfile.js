@@ -11,6 +11,11 @@ const jsmin = require('gulp-babel-minify');
 
 const fs = require("fs");
 
+gulp.task('build-assets', ['clean'], () => {
+    return gulp.src("src/assets/*")
+        .pipe(gulp.dest('dist/'));
+});
+
 gulp.task('build-main-js', ['build-css'], () => {
     return gulp.src("src/js/main.js")
         .pipe(jsmin())
@@ -25,7 +30,7 @@ gulp.task('build-components-js', ['build-main-js'], () => {
         .pipe(gulp.dest("dist/"));
 });
 
-gulp.task('build-css', ['clean'], () => {
+gulp.task('build-css', ['build-assets'], () => {
     return gulp.src("src/css/*.css")
         .pipe(cssmin())
         .pipe(rename({

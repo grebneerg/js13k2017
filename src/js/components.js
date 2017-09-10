@@ -167,10 +167,11 @@ AFRAME.registerComponent('moon', {
                     this.state = 0;
                     this.oldOrbit.exitOrbit();
                     if (this.orbiting.el.getAttribute("id") === "destination") {
-                        let msg = document.createElement("a-entity");
-                        msg.setAttribute("text", {value: "Home at last! Click to restart!", });
-                        msg.setAttribute("scale", "2 2 2");
-                        msg.setAttribute('position', '0.5 0 -1');
+                        let msg = document.createElement("a-image");
+                        msg.setAttribute("src", "#endtext");
+                        msg.setAttribute("width", "4")
+                        // msg.setAttribute("scale", "2 2 2");
+                        msg.setAttribute('position', '-0.7 0 -1');
                         c.appendChild(msg);
                         c.removeChild(c.querySelector("a-entity[cursor]"));
                         let nc = document.createElement('a-entity'); //Cursor stuff from here down
@@ -191,7 +192,7 @@ AFRAME.registerComponent('moon', {
                             // vrc ? galaxy.enterVR() : "";
                             let intro = document.querySelector("#intro");
                             intro.setAttribute("style", "display:block");
-                            window.location.reload();
+                            // window.location.reload();
                         });
                         c.appendChild(nc);
                         console.log("you won");
@@ -264,6 +265,19 @@ AFRAME.registerComponent('galaxy', {
     },
     
     init: function() {
+        let assets = document.createElement("a-assets")
+        let canvas = document.createElement("canvas");
+        canvas.setAttribute("id", "endtext");
+        canvas.setAttribute("width", 4000);
+        canvas.setAttribute("height", "500")
+        assets.appendChild(canvas);
+        this.el.appendChild(assets);
+        
+        let ctx = canvas.getContext('2d');
+        ctx.font = "75px Courier New";
+        ctx.fillStyle = 'white';
+        ctx.fillText("Home at last!\nClick to restart.", canvas.width/2, canvas.height/2, canvas.width);
+        
         this.planets = [];
         for (let x = 0; x < this.data.x; x++) {
             this.planets[x] = [];
