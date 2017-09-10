@@ -1,6 +1,5 @@
 const gulp = require("gulp");
 const concat = require('gulp-concat');
-// const uglify = require('gulp-uglify');
 const htmlmin = require('gulp-htmlmin');
 const cssmin = require('gulp-cssmin');
 const replace = require('gulp-replace');

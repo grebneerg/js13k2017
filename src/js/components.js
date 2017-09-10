@@ -121,7 +121,6 @@ AFRAME.registerComponent('moon', {
                 this.r = "" + rotation.x + rotation.y + rotation.z; //string to determine what orbiting method should be used
                 
                 this.oldOrbit = this.orbiting;
-                // this.orbiting.exitOrbit();
                 this.orbiting = evt.detail.intersectedEl.parentEl.components.orbit;
                 
                 this.o = evt.detail.intersectedEl.parentEl.getAttribute('position');
@@ -170,7 +169,6 @@ AFRAME.registerComponent('moon', {
                         let msg = document.createElement("a-image");
                         msg.setAttribute("src", "#endtext");
                         msg.setAttribute("width", "4")
-                        // msg.setAttribute("scale", "2 2 2");
                         msg.setAttribute('position', '-0.7 0 -1');
                         c.appendChild(msg);
                         c.removeChild(c.querySelector("a-entity[cursor]"));
@@ -180,19 +178,14 @@ AFRAME.registerComponent('moon', {
                         nc.setAttribute('raycaster', 'far: 1500');
                         nc.setAttribute('position', '0 0 -1');
                         nc.addEventListener("mousedown", (evt) => {
-                            // console.log("hey");
                             let scene = document.querySelector("a-scene");
                             let parent = scene.parentElement;
                             let galaxy = document.createElement("a-scene");
                             galaxy.setAttribute("galaxy", "");
-                            // let vrc = true
                             vr ? scene.exitVR() : "";
                             parent.removeChild(scene);
-                            // parent.appendChild(galaxy);
-                            // vrc ? galaxy.enterVR() : "";
                             let intro = document.querySelector("#intro");
                             intro.setAttribute("style", "display:block");
-                            // window.location.reload();
                         });
                         c.appendChild(nc);
                         console.log("you won");
@@ -201,47 +194,6 @@ AFRAME.registerComponent('moon', {
                 break;
         }
     },
-    // clickListener: function(evt) {
-    //     if (evt.detail.intersectedEl.getAttribute("class") === "orbit" && this.state === 0 && !evt.detail.intersectedEl.parentEl.components.orbit.orbiting) { //Verify it's not the same planet
-    //         let intersection = evt.detail.intersection;
-    //         let pos = this.el.getAttribute('position');
-    //         let time = intersection.distance;
-    //         let m = {};
-    //         m.t = (time / 10);
-    //         m.x = (intersection.point.x - pos.x) / m.t;
-    //         m.y = (intersection.point.y - pos.y) / m.t;
-    //         m.z = (intersection.point.z - pos.z) / m.t;
-    //         m.dest = intersection.point;
-    //         this.movement = m;
-    //         let rotation = evt.detail.intersectedEl.getAttribute('rotation');
-    //         this.r = "" + rotation.x + rotation.y + rotation.z; //string to determine what orbiting method should be used
-            
-    //         this.oldOrbit = this.orbiting;
-    //         // this.orbiting.exitOrbit();
-    //         this.orbiting = evt.detail.intersectedEl.parentEl.components.orbit;
-            
-    //         this.o = evt.detail.intersectedEl.parentEl.getAttribute('position');
-    //         this.orbiting.enterOrbit(); //this has to be after the above line because it removes access to an object needed there
-            
-            
-    //         switch (this.r) { //calculate distance based on plane
-    //             case "000":
-    //                 this.o.h = this.dist(intersection.point.x, this.o.x, intersection.point.y, this.o.y);
-    //                 this.angle = Math.atan2(intersection.point.y - this.o.y, intersection.point.x - this.o.x);
-    //                 break;
-    //             case "09090":
-    //                 this.o.h = this.dist(intersection.point.y, this.o.y, intersection.point.z, this.o.z);
-    //                 this.angle = Math.atan2(intersection.point.y - this.o.y, intersection.point.z - this.o.z);;
-    //                 break;
-    //             case "90900":
-    //                 this.o.h = this.dist(intersection.point.z, this.o.z, intersection.point.x, this.o.x);
-    //                 this.angle = Math.atan2(intersection.point.x - this.o.x, intersection.point.z - this.o.z);
-    //                 break;
-    //         }
-            
-    //         this.state = 1;
-    //     }
-    // },
     computeLoc: function(x, y) {
 
         let angle = Math.atan2(y, x) + this.d;
